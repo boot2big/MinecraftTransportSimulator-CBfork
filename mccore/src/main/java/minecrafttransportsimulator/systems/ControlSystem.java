@@ -735,9 +735,9 @@ public final class ControlSystem {
                     if (!ConfigSystem.client.controlSettings.useShifter.value) {
                         powered.engines.forEach(engine -> {
                             //If we don't have velocity, and we have the appropriate control, shift.
-                            if (brakeValue > EntityVehicleF_Physics.MAX_BRAKE / 4F && engine.currentGearVar.currentValue >= 0 && powered.axialVelocity < 0.01F) {
+                            if ((brakeValue > EntityVehicleF_Physics.MAX_BRAKE / 4F && engine.currentGearVar.currentValue >= 0 && powered.axialVelocity < 0.01F) || (powered.axialVelocity > 0.01F && engine.shiftCooldown == 0 && engine.currentGearVar.currentValue >= 2 && engine.rpm <= (engine.idleRPMVar.currentValue * 1.1875F))) {
                                 InterfaceManager.packetInterface.sendToServer(new PacketEntityVariableSet(engine.shiftDownVar, 1));
-                            } else if (throttleValue > EntityVehicleF_Physics.MAX_THROTTLE / 4F && engine.currentGearVar.currentValue <= 0 && powered.axialVelocity < 0.01F) {
+                            } else if ((throttleValue > EntityVehicleF_Physics.MAX_THROTTLE / 4F && engine.currentGearVar.currentValue <= 0 && powered.axialVelocity < 0.01F) || (powered.axialVelocity > 0.01F && engine.shiftCooldown == 0 && engine.currentGearVar.currentValue >= 1 && engine.rpm >= (engine.revLimitRPMVar.currentValue * 0.875F))) {
                                 InterfaceManager.packetInterface.sendToServer(new PacketEntityVariableSet(engine.shiftUpVar, 1));
                             }
                         });
