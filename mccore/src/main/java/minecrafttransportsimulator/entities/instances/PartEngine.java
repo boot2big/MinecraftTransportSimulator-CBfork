@@ -47,7 +47,7 @@ public class PartEngine extends APart {
     //Internal variables.
     private boolean autoStarterEngaged;
     private int starterLevel;
-    private int shiftCooldown;
+    public int shiftCooldown;
     private double lowestWheelVelocity;
     private double desiredWheelVelocity;
     private double engineAxialVelocity;
@@ -80,10 +80,10 @@ public class PartEngine extends APart {
 
     private final ComputedVariable maxRPMVar;
     private final ComputedVariable maxSafeRPMVar;
-    private final ComputedVariable revLimitRPMVar;
+    public final ComputedVariable revLimitRPMVar;
     private final ComputedVariable revLimitBounceVar;
     private final ComputedVariable revResistanceVar;
-    private final ComputedVariable idleRPMVar;
+    public final ComputedVariable idleRPMVar;
     private final ComputedVariable startRPMVar;
     private final ComputedVariable stallRPMVar;
     private final ComputedVariable starterPowerVar;
@@ -441,8 +441,10 @@ public class PartEngine extends APart {
                     } else {
                         --shiftCooldown;
                     }
+                } else if (!isAutomaticVar.isActive && currentGearVar.currentValue != 0 && shiftCooldown > 0) { //Handle shift cooldown logic anyways, for anyone still checking shift speed.
+                    --shiftCooldown;
                 }
-
+                
                 //Add extra hours, and possibly explode the engine, if it's too hot.
                 if (temp > OVERHEAT_TEMP_1 && !vehicleOn.isCreative) {
                     hoursVar.adjustBy(0.001 * (temp - OVERHEAT_TEMP_1) * getTotalWearFactor(), false);
