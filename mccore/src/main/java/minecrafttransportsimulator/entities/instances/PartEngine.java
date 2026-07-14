@@ -47,7 +47,7 @@ public class PartEngine extends APart {
     //Internal variables.
     private boolean autoStarterEngaged;
     private int starterLevel;
-    public int shiftCooldown;
+    private int shiftCooldown;
     private double lowestWheelVelocity;
     private double desiredWheelVelocity;
     private double engineAxialVelocity;
@@ -80,10 +80,10 @@ public class PartEngine extends APart {
 
     private final ComputedVariable maxRPMVar;
     private final ComputedVariable maxSafeRPMVar;
-    public final ComputedVariable revLimitRPMVar;
+    private final ComputedVariable revLimitRPMVar;
     private final ComputedVariable revLimitBounceVar;
     private final ComputedVariable revResistanceVar;
-    public final ComputedVariable idleRPMVar;
+    private final ComputedVariable idleRPMVar;
     private final ComputedVariable startRPMVar;
     private final ComputedVariable stallRPMVar;
     private final ComputedVariable starterPowerVar;
@@ -416,7 +416,7 @@ public class PartEngine extends APart {
                 }
 
                 //Do automatic transmission functions if needed.
-                if (isAutomaticVar.isActive && !world.isClient() && currentGearVar.currentValue != 0) {
+                if ((isAutomaticVar.isActive || vehicleOn.isSimpleThrottleVar.isActive) && !world.isClient() && currentGearVar.currentValue != 0) {
                     if (shiftCooldown == 0) {
                         if (currentGearVar.currentValue > 0 ? currentGearVar.currentValue < forwardsGears : -currentGearVar.currentValue < reverseGears) {
                             //Can shift up, try to do so.
@@ -441,10 +441,8 @@ public class PartEngine extends APart {
                     } else {
                         --shiftCooldown;
                     }
-                } else if (!isAutomaticVar.isActive && currentGearVar.currentValue != 0 && shiftCooldown > 0) { //Handle shift cooldown logic anyways, for anyone still checking shift speed.
-                    --shiftCooldown;
                 }
-                
+
                 //Add extra hours, and possibly explode the engine, if it's too hot.
                 if (temp > OVERHEAT_TEMP_1 && !vehicleOn.isCreative) {
                     hoursVar.adjustBy(0.001 * (temp - OVERHEAT_TEMP_1) * getTotalWearFactor(), false);
